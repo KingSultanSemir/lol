@@ -20,6 +20,7 @@ const DATA_PATH = DATA_DIR
   ? path.join(DATA_DIR, "data.json")
   : path.join(__dirname, "data.json");
 
+const SEED_PATH = path.join(__dirname, "data.json");
 const app = express();
 app.use(express.json());
 
@@ -28,18 +29,23 @@ async function loadState() {
     const raw = await fs.readFile(DATA_PATH, "utf-8");
     return JSON.parse(raw);
   } catch (e) {
-    // Wenn data.json noch nicht existiert: initialisieren
     if (e && e.code === "ENOENT") {
-      const initial = {
-        players: [],
-        banHistory: [],
-        globalLastUpdatedAt: null,
-      };
+      // Volume ist leer -> Seed aus Repo kopieren
       await fs
         .mkdir(path.dirname(DATA_PATH), { recursive: true })
         .catch(() => {});
-      await fs.writeFile(DATA_PATH, JSON.stringify(initial, null, 2), "utf-8");
-      return initial;
+
+      let seed = { players: [], banHistory: [], globalLastUpdatedAt: null };
+
+      try {
+        const rawSeed = await fs.readFile(SEED_PATH, "utf-8");
+        seed = JSON.parse(rawSeed);
+      } catch {
+        // falls Seed nicht lesbar ist, fallback bleibt leer
+      }
+
+      await fs.writeFile(DATA_PATH, JSON.stringify(seed, null, 2), "utf-8");
+      return seed;
     }
     throw e;
   }
