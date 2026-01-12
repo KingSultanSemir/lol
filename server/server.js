@@ -15,7 +15,10 @@ if (!RIOT_API_KEY) {
   process.exit(1);
 }
 
-const DATA_PATH = path.join(__dirname, "data.json");
+const DATA_DIR = process.env.DATA_DIR; // z.B. /data (Railway Volume)
+const DATA_PATH = DATA_DIR
+  ? path.join(DATA_DIR, "data.json")
+  : path.join(__dirname, "data.json");
 
 const app = express();
 app.use(express.json());
