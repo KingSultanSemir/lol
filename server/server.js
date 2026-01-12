@@ -414,7 +414,7 @@ async function refreshAll() {
 }
 
 // Serve frontend
-app.use("/", express.static(path.join(__dirname, "..", "public")));
+app.use("/", express.static(path.join(__dirname, "public")));
 
 // API: get state
 app.get("/api/state", async (req, res) => {
