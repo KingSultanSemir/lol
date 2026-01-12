@@ -1,5 +1,5 @@
 {
-  "globalLastUpdatedAt": "2026-01-12T14:33:54.408Z",
+  "globalLastUpdatedAt": "2026-01-12T22:11:37.343Z",
   "players": [
     {
       "id": "p1",
@@ -11,15 +11,19 @@
       },
       "puuid": "aJplVvbMXIsCsWtK-yt3uiCKOF0ZMIxCG0Kg8aF1JHOgHo7rTN4b3IAjBMvLUITS-ueJTbNoSgCsMA",
       "lastRank": {
-        "unranked": true
+        "tier": "BRONZE",
+        "division": "IV",
+        "lp": 20
       },
       "currentRank": {
-        "unranked": true
+        "tier": "BRONZE",
+        "division": "IV",
+        "lp": 20
       },
       "bans": [],
       "pendingBan": null,
-      "lastError": "Riot API 403 Forbidden: {\"status\":{\"message\":\"Forbidden\",\"status_code\":403}}",
-      "lastUpdatedAt": "2026-01-12T14:33:54.408Z",
+      "lastError": "newRank is not defined",
+      "lastUpdatedAt": "2026-01-12T22:11:37.343Z",
       "champGamesByYear": {
         "2026": {
           "computedAt": "2026-01-12T14:09:36.905Z",
@@ -60,15 +64,19 @@
       },
       "puuid": "GXD6AEJBvLiz7nXkcBcudjTlkTBfAYpChkZpHv6XMA_K4KrHU_SbJPURezb39KXXwJ0sTAW6kk6kyA",
       "lastRank": {
-        "unranked": true
+        "tier": "BRONZE",
+        "division": "III",
+        "lp": 80
       },
       "currentRank": {
-        "unranked": true
+        "tier": "BRONZE",
+        "division": "III",
+        "lp": 80
       },
       "bans": [],
       "pendingBan": null,
-      "lastError": "Riot API 403 Forbidden: {\"status\":{\"message\":\"Forbidden\",\"status_code\":403}}",
-      "lastUpdatedAt": "2026-01-12T14:33:54.408Z",
+      "lastError": "newRank is not defined",
+      "lastUpdatedAt": "2026-01-12T22:11:37.343Z",
       "champGamesByYear": {
         "2026": {
           "computedAt": "2026-01-12T14:14:42.851Z",
@@ -103,23 +111,82 @@
       },
       "puuid": "zi2_72d0jxWZ9hI1oIyDgBeGvxR7VuIwG48K83E5PJya4na_LqVx1McVvJkDJnDJkYgeiktUx6-Zow",
       "lastRank": {
-        "unranked": true
+        "tier": "BRONZE",
+        "division": "II",
+        "lp": 4
       },
       "currentRank": {
-        "unranked": true
+        "tier": "BRONZE",
+        "division": "II",
+        "lp": 4
       },
       "bans": [],
       "pendingBan": null,
-      "lastError": "Riot API 403 Forbidden: {\"status\":{\"message\":\"Forbidden\",\"status_code\":403}}",
-      "lastUpdatedAt": "2026-01-12T14:33:54.408Z",
+      "lastError": "newRank is not defined",
+      "lastUpdatedAt": "2026-01-12T22:11:37.343Z",
       "champGamesByYear": {
         "2026": {
-          "computedAt": "2026-01-12T14:27:01.643Z",
+          "computedAt": "2026-01-12T22:05:06.693Z",
           "year": 2026,
           "queueId": null,
-          "matchCount": 0,
-          "totalGames": 0,
-          "byChampion": []
+          "matchCount": 9,
+          "totalGames": 9,
+          "byChampion": [
+            {
+              "championId": 51,
+              "count": 1,
+              "name": "Caitlyn",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Caitlyn.png"
+            },
+            {
+              "championId": 895,
+              "count": 1,
+              "name": "Nilah",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Nilah.png"
+            },
+            {
+              "championId": 81,
+              "count": 1,
+              "name": "Ezreal",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Ezreal.png"
+            },
+            {
+              "championId": 202,
+              "count": 1,
+              "name": "Jhin",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Jhin.png"
+            },
+            {
+              "championId": 360,
+              "count": 1,
+              "name": "Samira",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Samira.png"
+            },
+            {
+              "championId": 498,
+              "count": 1,
+              "name": "Xayah",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Xayah.png"
+            },
+            {
+              "championId": 110,
+              "count": 1,
+              "name": "Varus",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Varus.png"
+            },
+            {
+              "championId": 222,
+              "count": 1,
+              "name": "Jinx",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Jinx.png"
+            },
+            {
+              "championId": 21,
+              "count": 1,
+              "name": "Miss Fortune",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/MissFortune.png"
+            }
+          ]
         }
       }
     },
@@ -133,40 +200,50 @@
       },
       "puuid": "mPGCFfPxPgsVVmrYUhp9K_X6NNCtMP4ugLfwd6cOogf4XlgQXtAd8bD2xCIO3X_9jVHVBHdDrbuXpA",
       "lastRank": {
-        "unranked": true
+        "tier": "BRONZE",
+        "division": "III",
+        "lp": 41
       },
       "currentRank": {
-        "unranked": true
+        "tier": "BRONZE",
+        "division": "III",
+        "lp": 41
       },
-      "bans": [],
+      "bans": [
+        {
+          "time": "2026-01-12T12:34:56.000Z",
+          "champion": "Morgana",
+          "note": "Von Bronze 4 nach 3"
+        }
+      ],
       "pendingBan": null,
-      "lastError": "Riot API 403 Forbidden: {\"status\":{\"message\":\"Forbidden\",\"status_code\":403}}",
-      "lastUpdatedAt": "2026-01-12T14:33:54.408Z",
+      "lastError": "newRank is not defined",
+      "lastUpdatedAt": "2026-01-12T22:11:37.343Z",
       "champGamesByYear": {
         "2026": {
-          "computedAt": "2026-01-12T14:30:26.710Z",
+          "computedAt": "2026-01-12T22:07:54.316Z",
           "year": 2026,
           "queueId": null,
-          "matchCount": 4,
-          "totalGames": 4,
+          "matchCount": 9,
+          "totalGames": 9,
           "byChampion": [
             {
               "championId": 25,
-              "count": 2,
+              "count": 5,
               "name": "Morgana",
               "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Morgana.png"
+            },
+            {
+              "championId": 60,
+              "count": 3,
+              "name": "Elise",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Elise.png"
             },
             {
               "championId": 203,
               "count": 1,
               "name": "Kindred",
               "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Kindred.png"
-            },
-            {
-              "championId": 60,
-              "count": 1,
-              "name": "Elise",
-              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Elise.png"
             }
           ]
         }
@@ -184,17 +261,17 @@
       "lastRank": {
         "tier": "BRONZE",
         "division": "IV",
-        "lp": 21
+        "lp": 71
       },
       "currentRank": {
         "tier": "BRONZE",
         "division": "IV",
-        "lp": 21
+        "lp": 71
       },
       "bans": [],
       "pendingBan": null,
-      "lastError": "Riot API 403 Forbidden: {\"status\":{\"message\":\"Forbidden\",\"status_code\":403}}",
-      "lastUpdatedAt": "2026-01-12T14:33:54.408Z",
+      "lastError": "newRank is not defined",
+      "lastUpdatedAt": "2026-01-12T22:11:37.343Z",
       "champGamesByYear": {
         "2026": {
           "computedAt": "2026-01-12T14:12:42.745Z",
@@ -226,5 +303,26 @@
       }
     }
   ],
-  "banHistory": []
+  "banHistory": [
+    {
+      "time": "2026-01-12T12:34:56.000Z",
+      "playerId": "p3",
+      "playerName": "Darwin",
+      "champion": "Morgana",
+      "note": "",
+      "promotion": {
+        "from": {
+          "tier": "BRONZE",
+          "division": "IV",
+          "lp": 75
+        },
+        "to": {
+          "tier": "BRONZE",
+          "division": "III",
+          "lp": 15
+        },
+        "detectedAt": "2026-01-10T18:35:00.000Z"
+      }
+    }
+  ]
 }

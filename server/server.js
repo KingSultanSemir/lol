@@ -199,41 +199,49 @@ function mapCountsToChampionList(ddChampions, countsMap) {
   return out;
 }
 
-function rankValue(rank) {
+function rankValue(oldrank, newrank) {
   // Higher = better
   // rank object: { tier, division, lp } OR { unranked: true }
-  if (!rank || rank.unranked) return -1;
+  if (!newRank || newRank.unranked) return false;
 
-  const tierOrder = [
-    "IRON",
-    "BRONZE",
-    "SILVER",
-    "GOLD",
-    "PLATINUM",
-    "EMERALD",
-    "DIAMOND",
-    "MASTER",
-    "GRANDMASTER",
-    "CHALLENGER",
-  ];
-  const divOrder = ["IV", "III", "II", "I"]; // higher index = better
+  // Wenn alt fehlt oder unranked war: bei dir soll das NICHT als Promotion zählen
+  if (!oldRank || oldRank.unranked) return false;
 
-  const t = String(rank.tier || "").toUpperCase();
-  const d = String(rank.division || "").toUpperCase();
+  const tierOrder = {
+    IRON: 1,
+    BRONZE: 2,
+    SILVER: 3,
+    GOLD: 4,
+    PLATINUM: 5,
+    EMERALD: 6,
+    DIAMOND: 7,
+    MASTER: 8,
+    GRANDMASTER: 9,
+    CHALLENGER: 10,
+  };
 
-  const tIdx = tierOrder.indexOf(t);
-  if (tIdx === -1) return -1;
+  const divOrder = { IV: 1, III: 2, II: 3, I: 4 };
 
-  // Apex tiers often have no division in entries; treat as best within tier
-  const isApex = ["MASTER", "GRANDMASTER", "CHALLENGER"].includes(t);
+  const oldTier = tierOrder[String(oldRank.tier || "").toUpperCase()] ?? 0;
+  const newTier = tierOrder[String(newRank.tier || "").toUpperCase()] ?? 0;
 
-  const dIdx = isApex ? 3 : divOrder.indexOf(d);
-  const divScore = dIdx === -1 ? 0 : dIdx; // be permissive
+  if (newTier !== oldTier) return newTier > oldTier;
 
-  // Add LP as minor tiebreaker
-  const lp = Number.isFinite(+rank.lp) ? +rank.lp : 0;
+  // Apex-Tiers (Master+) haben oft keine Division -> dann nur LP vergleichen
+  const apex = newTier >= tierOrder.MASTER;
 
-  return tIdx * 1000 + divScore * 10 + Math.min(lp, 99) / 100;
+  const oldDiv = apex
+    ? 0
+    : divOrder[String(oldRank.division || "").toUpperCase()] ?? 0;
+  const newDiv = apex
+    ? 0
+    : divOrder[String(newRank.division || "").toUpperCase()] ?? 0;
+
+  if (newDiv !== oldDiv) return newDiv > oldDiv;
+
+  // Gleicher Tier+Div: LP zählt NICHT als Uprank bei euch -> daher false
+  // Wenn du LP als Promotion zählen willst, ändere auf: return newLp > oldLp;
+  return false;
 }
 
 function formatRank(rank) {
@@ -280,7 +288,7 @@ async function fetchSoloQRank(player) {
 }
 
 function isPromotion(prevRank, newRank) {
-  return rankValue(newRank) > rankValue(prevRank);
+  return rankValue(prevRank, newRank);
 }
 
 const CHAMP_GAMES_TTL_MS = 30 * 60 * 1000; // 30 Minuten
