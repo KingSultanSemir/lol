@@ -1,0 +1,230 @@
+{
+  "globalLastUpdatedAt": "2026-01-12T14:33:54.408Z",
+  "players": [
+    {
+      "id": "p1",
+      "displayName": "Vincent",
+      "platform": "euw1",
+      "riotId": {
+        "gameName": "DarwinimAldi",
+        "tagLine": "KASSE"
+      },
+      "puuid": "aJplVvbMXIsCsWtK-yt3uiCKOF0ZMIxCG0Kg8aF1JHOgHo7rTN4b3IAjBMvLUITS-ueJTbNoSgCsMA",
+      "lastRank": {
+        "unranked": true
+      },
+      "currentRank": {
+        "unranked": true
+      },
+      "bans": [],
+      "pendingBan": null,
+      "lastError": "Riot API 403 Forbidden: {\"status\":{\"message\":\"Forbidden\",\"status_code\":403}}",
+      "lastUpdatedAt": "2026-01-12T14:33:54.408Z",
+      "champGamesByYear": {
+        "2026": {
+          "computedAt": "2026-01-12T14:09:36.905Z",
+          "year": 2026,
+          "queueId": null,
+          "matchCount": 3,
+          "totalGames": 3,
+          "byChampion": [
+            {
+              "championId": 9,
+              "count": 1,
+              "name": "Fiddlesticks",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Fiddlesticks.png"
+            },
+            {
+              "championId": 11,
+              "count": 1,
+              "name": "Master Yi",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/MasterYi.png"
+            },
+            {
+              "championId": 113,
+              "count": 1,
+              "name": "Sejuani",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Sejuani.png"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "p2",
+      "displayName": "Selim",
+      "platform": "euw1",
+      "riotId": {
+        "gameName": "KnopfDonald",
+        "tagLine": "Marv"
+      },
+      "puuid": "GXD6AEJBvLiz7nXkcBcudjTlkTBfAYpChkZpHv6XMA_K4KrHU_SbJPURezb39KXXwJ0sTAW6kk6kyA",
+      "lastRank": {
+        "unranked": true
+      },
+      "currentRank": {
+        "unranked": true
+      },
+      "bans": [],
+      "pendingBan": null,
+      "lastError": "Riot API 403 Forbidden: {\"status\":{\"message\":\"Forbidden\",\"status_code\":403}}",
+      "lastUpdatedAt": "2026-01-12T14:33:54.408Z",
+      "champGamesByYear": {
+        "2026": {
+          "computedAt": "2026-01-12T14:14:42.851Z",
+          "year": 2026,
+          "queueId": null,
+          "matchCount": 3,
+          "totalGames": 3,
+          "byChampion": [
+            {
+              "championId": 18,
+              "count": 2,
+              "name": "Tristana",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Tristana.png"
+            },
+            {
+              "championId": 21,
+              "count": 1,
+              "name": "Miss Fortune",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/MissFortune.png"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "p3",
+      "displayName": "Roman",
+      "platform": "euw1",
+      "riotId": {
+        "gameName": "Ratzefummel",
+        "tagLine": "1111"
+      },
+      "puuid": "zi2_72d0jxWZ9hI1oIyDgBeGvxR7VuIwG48K83E5PJya4na_LqVx1McVvJkDJnDJkYgeiktUx6-Zow",
+      "lastRank": {
+        "unranked": true
+      },
+      "currentRank": {
+        "unranked": true
+      },
+      "bans": [],
+      "pendingBan": null,
+      "lastError": "Riot API 403 Forbidden: {\"status\":{\"message\":\"Forbidden\",\"status_code\":403}}",
+      "lastUpdatedAt": "2026-01-12T14:33:54.408Z",
+      "champGamesByYear": {
+        "2026": {
+          "computedAt": "2026-01-12T14:27:01.643Z",
+          "year": 2026,
+          "queueId": null,
+          "matchCount": 0,
+          "totalGames": 0,
+          "byChampion": []
+        }
+      }
+    },
+    {
+      "id": "p4",
+      "displayName": "Darwin",
+      "platform": "euw1",
+      "riotId": {
+        "gameName": "Dave",
+        "tagLine": "darw"
+      },
+      "puuid": "mPGCFfPxPgsVVmrYUhp9K_X6NNCtMP4ugLfwd6cOogf4XlgQXtAd8bD2xCIO3X_9jVHVBHdDrbuXpA",
+      "lastRank": {
+        "unranked": true
+      },
+      "currentRank": {
+        "unranked": true
+      },
+      "bans": [],
+      "pendingBan": null,
+      "lastError": "Riot API 403 Forbidden: {\"status\":{\"message\":\"Forbidden\",\"status_code\":403}}",
+      "lastUpdatedAt": "2026-01-12T14:33:54.408Z",
+      "champGamesByYear": {
+        "2026": {
+          "computedAt": "2026-01-12T14:30:26.710Z",
+          "year": 2026,
+          "queueId": null,
+          "matchCount": 4,
+          "totalGames": 4,
+          "byChampion": [
+            {
+              "championId": 25,
+              "count": 2,
+              "name": "Morgana",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Morgana.png"
+            },
+            {
+              "championId": 203,
+              "count": 1,
+              "name": "Kindred",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Kindred.png"
+            },
+            {
+              "championId": 60,
+              "count": 1,
+              "name": "Elise",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Elise.png"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "p5",
+      "displayName": "Marvin",
+      "platform": "euw1",
+      "riotId": {
+        "gameName": "MurmelUrmel",
+        "tagLine": "lost"
+      },
+      "puuid": "hcfobvDsSX9QzWLs0dxPXkAK8NOEvcM55FrnxFgQT5CgBI0NPo0Mn9DYvKFGVmVbSj33BTngXEeGWw",
+      "lastRank": {
+        "tier": "BRONZE",
+        "division": "IV",
+        "lp": 21
+      },
+      "currentRank": {
+        "tier": "BRONZE",
+        "division": "IV",
+        "lp": 21
+      },
+      "bans": [],
+      "pendingBan": null,
+      "lastError": "Riot API 403 Forbidden: {\"status\":{\"message\":\"Forbidden\",\"status_code\":403}}",
+      "lastUpdatedAt": "2026-01-12T14:33:54.408Z",
+      "champGamesByYear": {
+        "2026": {
+          "computedAt": "2026-01-12T14:12:42.745Z",
+          "year": 2026,
+          "queueId": null,
+          "matchCount": 5,
+          "totalGames": 5,
+          "byChampion": [
+            {
+              "championId": 105,
+              "count": 3,
+              "name": "Fizz",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Fizz.png"
+            },
+            {
+              "championId": 33,
+              "count": 1,
+              "name": "Rammus",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Rammus.png"
+            },
+            {
+              "championId": 34,
+              "count": 1,
+              "name": "Anivia",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Anivia.png"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "banHistory": []
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LoL Climb Challenge (5 Spieler)</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div>
+        <h1>LoL Climb Challenge</h1>
+        <p class="sub">Vincent stinkt</p>
+      </div>
+      <div class="actions">
+        <span id="globalLastUpdate" class="muted">Letztes Update: —</span>
+        <button id="btnRefresh">Jetzt aktualisieren</button>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="card">
+        <h2>Spieler</h2>
+        <div id="players" class="players"></div>
+      </section>
+
+      <section class="card" style="width: 60%; margin: 0 auto">
+        <h2>Bann-Historie</h2>
+        <div id="history" class="history"></div>
+        <div id="historyEmpty" class="muted" style="display: none">
+          Noch keine Bans eingetragen.
+        </div>
+      </section>
+    </main>
+
+    <div id="modalBackdrop" class="modal-backdrop" style="display: none">
+      <div class="modal">
+        <div class="modal-head">
+          <h3>Bann eintragen</h3>
+          <button id="btnCloseModal" class="ghost">Schließen</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="grid">
+            <div>
+              <label>Spieler</label>
+              <div id="mPlayerName" class="pill"></div>
+            </div>
+            <div>
+              <label>Champion auswählen</label>
+              <input
+                id="mChampSearch"
+                placeholder="Suchen (z. B. 'yas', 'ahri')"
+              />
+            </div>
+          </div>
+
+          <div style="margin-top: 12px">
+            <div id="champGrid" class="champ-grid"></div>
+          </div>
+
+          <div style="margin-top: 10px">
+            <div class="muted">
+              Ausgewählt: <span id="mSelectedChamp">—</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 12px">
+            <label>Notiz (optional)</label>
+            <textarea
+              id="mNote"
+              placeholder="z. B. Uprank nach Promo"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <div id="mHint" class="muted"></div>
+          <div>
+            <button id="btnCancelModal" class="ghost">Abbrechen</button>
+            <button id="btnSaveBan">Bann bestätigen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="overviewBackdrop" class="modal-backdrop" style="display: none">
+      <div class="modal">
+        <div class="modal-head">
+          <h3 id="ovTitle">Spielerübersicht</h3>
+          <button id="btnCloseOverview" class="ghost">Schließen</button>
+        </div>
+
+        <div class="modal-body">
+          <h4 class="ov-h">Meistgespielt</h4>
+          <div id="ovMostPlayed" class="ov-grid"></div>
+
+          <h4 class="ov-h" style="margin-top: 14px">Gebannt</h4>
+          <div id="ovBans" class="ov-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
