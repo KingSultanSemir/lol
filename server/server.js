@@ -24,8 +24,25 @@ const app = express();
 app.use(express.json());
 
 async function loadState() {
-  const raw = await fs.readFile(DATA_PATH, "utf-8");
-  return JSON.parse(raw);
+  try {
+    const raw = await fs.readFile(DATA_PATH, "utf-8");
+    return JSON.parse(raw);
+  } catch (e) {
+    // Wenn data.json noch nicht existiert: initialisieren
+    if (e && e.code === "ENOENT") {
+      const initial = {
+        players: [],
+        banHistory: [],
+        globalLastUpdatedAt: null,
+      };
+      await fs
+        .mkdir(path.dirname(DATA_PATH), { recursive: true })
+        .catch(() => {});
+      await fs.writeFile(DATA_PATH, JSON.stringify(initial, null, 2), "utf-8");
+      return initial;
+    }
+    throw e;
+  }
 }
 
 async function saveState(state) {
