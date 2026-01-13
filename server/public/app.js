@@ -345,12 +345,47 @@ function renderPlayers() {
       p.riotId.tagLine
     )} · ${esc(p.platform)}</div>
         </div>
-        <div class="pill">${esc(rankText(p.currentRank))}</div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+  <div class="pill">${esc(rankText(p.currentRank))}</div>
+  <div class="muted">
+    ${
+      p.currentRank && p.currentRank.winrate != null
+        ? `Winrate: ${esc(String(p.currentRank.winrate))}% (${esc(
+            String(p.currentRank.wins)
+          )}-${esc(String(p.currentRank.losses))})`
+        : "Winrate: —"
+    }
+  </div>
+</div>
+
       </div>
 
       <div class="row">
         ${pending || `<span class="badge">Kein Pending Ban</span>`}
       </div>
+      <div>
+  <div class="muted" style="margin-bottom:6px;">Letzte 5 Games</div>
+  <div class="last5">
+    ${
+      (p.last5?.games?.length ? p.last5.games : [])
+        .map(
+          (g) => `
+          <div class="last5-item ${g.win ? "win" : "loss"}"
+               title="${esc(g.championName)} · ${g.k}/${g.d}/${g.a} · ${
+            g.win ? "Win" : "Loss"
+          }">
+            ${
+              g.championIcon
+                ? `<img src="${g.championIcon}" alt="${esc(g.championName)}"/>`
+                : ""
+            }
+          </div>
+        `
+        )
+        .join("") || `<span class="muted">Keine Daten.</span>`
+    }
+  </div>
+</div>
 
       <div>
         <div class="muted" style="margin-bottom:6px;">Gebannte Champions</div>

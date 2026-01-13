@@ -14,6 +14,8 @@ if (!RIOT_API_KEY) {
   console.error("Fehlt: RIOT_API_KEY (Environment Variable).");
   process.exit(1);
 }
+const LAST5_TTL_MS = 2 * 60 * 1000;
+const REMAKE_MAX_DURATION_SEC = 300; // 5 Minuten
 
 const DATA_DIR = process.env.DATA_DIR; // z.B. /data (Railway Volume)
 const DATA_PATH = DATA_DIR
@@ -306,10 +308,19 @@ async function fetchSoloQRank(player) {
   if (!solo) return { unranked: true };
 
   // tier (e.g., GOLD), rank (division like II), leaguePoints
+
+  const wins = Number(solo.wins || 0);
+  const losses = Number(solo.losses || 0);
+  const games = wins + losses;
+  const winrate = games > 0 ? Math.round((wins / games) * 1000) / 10 : null; // z.B. 53.2
+
   return {
     tier: solo.tier,
     division: solo.rank,
     lp: solo.leaguePoints,
+    wins,
+    losses,
+    winrate,
   };
 }
 
@@ -332,6 +343,80 @@ function isFresh(iso, ttlMs) {
   const t = Date.parse(iso || "");
   if (!Number.isFinite(t)) return false;
   return Date.now() - t < ttlMs;
+}
+
+async function fetchLastNGamesSummary(player, n = 5, queueId = 420) {
+  const region = regionalForPlatform(player.platform);
+
+  // Match IDs (nur Ranked SoloQ = 420)
+  const qs = new URLSearchParams({
+    start: "0",
+    count: String(Math.min(n * 2, 20)), // etwas mehr holen, falls Remakes rausfliegen
+  });
+  if (queueId != null) qs.set("queue", String(queueId));
+
+  const idsUrl =
+    `https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/` +
+    `${encodeURIComponent(player.puuid)}/ids?` +
+    qs.toString();
+
+  console.log(idsUrl);
+  const matchIds = await riotFetch(idsUrl);
+  console.log(matchIds);
+  if (!Array.isArray(matchIds) || matchIds.length === 0) return [];
+
+  const dd = await getChampionsFromDdragon({ lang: "de_DE" });
+  const byKey = new Map(dd.champions.map((c) => [String(c.key), c]));
+
+  const out = [];
+  for (const matchId of matchIds) {
+    if (out.length >= n) break;
+
+    const m = await fetchMatchDetail(region, matchId);
+
+    const dur = m?.info?.gameDuration;
+    if (Number.isFinite(dur) && dur > 0 && dur < REMAKE_MAX_DURATION_SEC) {
+      console.log("remake");
+      continue; // Remake skip
+    }
+
+    const parts = m?.info?.participants || [];
+    const me = parts.find((x) => x?.puuid === player.puuid);
+    if (!me) continue;
+
+    const champId = me.championId;
+    const champ = byKey.get(String(champId));
+
+    console.log({
+      matchId,
+      time: new Date(m?.info?.gameEndTimestamp || Date.now()).toISOString(),
+      win: !!me.win,
+      championId: champId,
+      championName: champ?.name || `Champion ${champId}`,
+      championIcon: champ?.icon || null,
+      k: Number(me.kills || 0),
+      d: Number(me.deaths || 0),
+      a: Number(me.assists || 0),
+      durationSec: Number(dur || 0),
+      queueId: Number(m?.info?.queueId || 0),
+    });
+
+    out.push({
+      matchId,
+      time: new Date(m?.info?.gameEndTimestamp || Date.now()).toISOString(),
+      win: !!me.win,
+      championId: champId,
+      championName: champ?.name || `Champion ${champId}`,
+      championIcon: champ?.icon || null,
+      k: Number(me.kills || 0),
+      d: Number(me.deaths || 0),
+      a: Number(me.assists || 0),
+      durationSec: Number(dur || 0),
+      queueId: Number(m?.info?.queueId || 0),
+    });
+  }
+
+  return out;
 }
 
 async function computeChampionGamesForYear(
@@ -397,6 +482,17 @@ async function refreshAll() {
       // shift current -> last, then set new current
       p.lastRank = p.currentRank ?? p.lastRank ?? null;
       p.currentRank = newRank;
+
+      try {
+        const cached = p.last5;
+        if (!cached?.computedAt || !isFresh(cached.computedAt, LAST5_TTL_MS)) {
+          const games = await fetchLastNGamesSummary(p, 5, 420);
+          p.last5 = { computedAt: nowIso, games };
+        }
+      } catch (e) {
+        p.last5 = { computedAt: nowIso, games: [] };
+        p.last5Error = String(e?.message || e);
+      }
       p.lastUpdatedAt = nowIso;
 
       if (isPromotion(prevRank, newRank)) {

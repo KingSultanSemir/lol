@@ -12,6 +12,51 @@ body {
   background: var(--bg);
   color: var(--text);
 }
+.last5 {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.last5-item {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 2px solid var(--line);
+  overflow: hidden;
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.last5-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.last5-item.win {
+  border-color: rgba(70, 200, 130, 0.95);
+  box-shadow: 0 0 0 3px rgba(70, 200, 130, 0.28);
+}
+
+.last5-item.loss {
+  border-color: rgba(235, 90, 100, 0.95);
+  box-shadow: 0 0 0 3px rgba(235, 90, 100, 0.28);
+}
+
+.last5-item.win::after,
+.last5-item.loss::after {
+  display: none !important;
+  content: none !important;
+}
+.last5-item.win::after {
+  background: rgba(70, 180, 120, 0.9);
+}
+.last5-item.loss::after {
+  background: rgba(220, 80, 90, 0.9);
+}
+
 .header {
   max-width: 1100px;
   margin: 0 auto;
