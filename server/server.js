@@ -227,14 +227,7 @@ function mapCountsToChampionList(ddChampions, countsMap) {
   return out;
 }
 
-function rankValue(oldrank, newrank) {
-  // Higher = better
-  // rank object: { tier, division, lp } OR { unranked: true }
-  if (!newRank || newRank.unranked) return false;
-
-  // Wenn alt fehlt oder unranked war: bei dir soll das NICHT als Promotion zählen
-  if (!oldRank || oldRank.unranked) return false;
-
+function rankValue(oldRank, newRank) {
   const tierOrder = {
     IRON: 1,
     BRONZE: 2,
