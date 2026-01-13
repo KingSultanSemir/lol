@@ -58,7 +58,7 @@ async function saveState(state) {
 }
 
 async function riotFetch(url) {
-  //console.log(url);
+  console.log("api call");
   const res = await fetch(url, {
     headers: { "X-Riot-Token": RIOT_API_KEY },
   });
@@ -291,9 +291,9 @@ async function fetchSoloQRank(player) {
   const url =
     `https://${platform}.api.riotgames.com/lol/league/v4/entries/by-puuid/` +
     `${encodeURIComponent(player.puuid)}`;
-  console.log(url);
+  //console.log(url);
   const entries = await riotFetch(url);
-  console.log(entries);
+  //console.log(entries);
   const solo = Array.isArray(entries)
     ? entries.find((e) => e.queueType === "RANKED_SOLO_5x5")
     : null;
@@ -353,9 +353,9 @@ async function fetchLastNGamesSummary(player, n = 5, queueId = 420) {
     `${encodeURIComponent(player.puuid)}/ids?` +
     qs.toString();
 
-  console.log(idsUrl);
+  //console.log(idsUrl);
   const matchIds = await riotFetch(idsUrl);
-  console.log(matchIds);
+  //console.log(matchIds);
   if (!Array.isArray(matchIds) || matchIds.length === 0) return [];
 
   const dd = await getChampionsFromDdragon({ lang: "de_DE" });
@@ -369,7 +369,7 @@ async function fetchLastNGamesSummary(player, n = 5, queueId = 420) {
 
     const dur = m?.info?.gameDuration;
     if (Number.isFinite(dur) && dur > 0 && dur < REMAKE_MAX_DURATION_SEC) {
-      console.log("remake");
+      //console.log("remake");
       continue; // Remake skip
     }
 
@@ -472,19 +472,48 @@ async function refreshAll() {
       const newRank = await fetchSoloQRank(p);
       const prevRank = p.currentRank ?? p.lastRank ?? null;
 
+      // Vorherige SoloQ W/L aus dem gespeicherten State
+      const prevWL = p.soloWL || { wins: null, losses: null };
+      const prevTotal =
+        (Number.isFinite(+prevWL.wins) ? +prevWL.wins : 0) +
+        (Number.isFinite(+prevWL.losses) ? +prevWL.losses : 0);
+
+      const newWL = {
+        wins: Number.isFinite(+newRank.wins) ? +newRank.wins : 0,
+        losses: Number.isFinite(+newRank.losses) ? +newRank.losses : 0,
+      };
+      const newTotal = newWL.wins + newWL.losses;
+
+      // Immer speichern, damit nächstes Mal verglichen werden kann
+      p.soloWL = newWL;
+
       // shift current -> last, then set new current
       p.lastRank = p.currentRank ?? p.lastRank ?? null;
       p.currentRank = newRank;
 
-      try {
-        const cached = p.last5;
-        if (!cached?.computedAt || !isFresh(cached.computedAt, LAST5_TTL_MS)) {
-          const games = await fetchLastNGamesSummary(p, 5, 420);
-          p.last5 = { computedAt: nowIso, games };
+      if (newTotal !== prevTotal) {
+        try {
+          const cached = p.last5;
+          if (
+            !cached?.computedAt ||
+            !isFresh(cached.computedAt, LAST5_TTL_MS)
+          ) {
+            const games = await fetchLastNGamesSummary(p, 5, 420);
+            p.last5 = { computedAt: nowIso, games };
+          }
+        } catch (e) {
+          p.last5 = { computedAt: nowIso, games: [] };
+          p.last5Error = String(e?.message || e);
         }
-      } catch (e) {
-        p.last5 = { computedAt: nowIso, games: [] };
-        p.last5Error = String(e?.message || e);
+        try {
+          const stats = await computeChampionGamesForYear(state, p, 2026, null); // null = alle Queues
+          // Trigger merken, damit klar ist, wann zuletzt berechnet wurde
+          stats.triggerSoloTotal = newTotal;
+          if (!p.champGamesByYear) p.champGamesByYear = {};
+          p.champGamesByYear["2026"] = stats;
+        } catch (e) {
+          p.champGamesError2026 = String(e?.message || e);
+        }
       }
       p.lastUpdatedAt = nowIso;
 
@@ -602,24 +631,27 @@ app.get("/api/player/:playerId/overview", async (req, res) => {
 app.get("/api/player/:playerId/champ-games", async (req, res) => {
   try {
     const playerId = String(req.params.playerId);
-    const year = Number(req.query.year || 2026);
-
-    // optional: queue filter (420 SoloQ, 440 Flex, null = alle)
-    const queueParam = req.query.queue;
-    const queueId =
-      queueParam === undefined || queueParam === "" ? null : Number(queueParam);
+    const year = String(req.query.year || "2026");
 
     const state = await loadState();
     const p = state.players.find((x) => x.id === playerId);
-    if (!p) {
+    if (!p)
       return res
         .status(404)
         .json({ ok: false, error: "Spieler nicht gefunden." });
+
+    const stats = p.champGamesByYear?.[year];
+    if (!stats) {
+      return res.json({
+        ok: true,
+        year: Number(year),
+        byChampion: [],
+        totalGames: 0,
+        matchCount: 0,
+      });
     }
 
-    const stats = await computeChampionGamesForYear(state, p, year, queueId);
-
-    res.json({
+    return res.json({
       ok: true,
       playerId: p.id,
       displayName: p.displayName,

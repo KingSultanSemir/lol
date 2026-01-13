@@ -1,5 +1,5 @@
 {
-  "globalLastUpdatedAt": "2026-01-13T10:25:22.496Z",
+  "globalLastUpdatedAt": "2026-01-13T12:28:33.129Z",
   "players": [
     {
       "id": "p1",
@@ -29,26 +29,56 @@
       "bans": [],
       "pendingBan": null,
       "lastError": "newRank is not defined",
-      "lastUpdatedAt": "2026-01-13T10:25:22.496Z",
+      "lastUpdatedAt": "2026-01-13T12:28:33.129Z",
       "champGamesByYear": {
         "2026": {
-          "computedAt": "2026-01-12T14:09:36.905Z",
+          "computedAt": "2026-01-13T12:28:24.760Z",
           "year": 2026,
           "queueId": null,
-          "matchCount": 3,
-          "totalGames": 3,
+          "matchCount": 8,
+          "totalGames": 8,
           "byChampion": [
             {
-              "championId": 9,
+              "championId": 15,
               "count": 1,
-              "name": "Fiddlesticks",
-              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Fiddlesticks.png"
+              "name": "Sivir",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Sivir.png"
+            },
+            {
+              "championId": 20,
+              "count": 1,
+              "name": "Nunu & Willump",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Nunu.png"
+            },
+            {
+              "championId": 51,
+              "count": 1,
+              "name": "Caitlyn",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Caitlyn.png"
+            },
+            {
+              "championId": 103,
+              "count": 1,
+              "name": "Ahri",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Ahri.png"
+            },
+            {
+              "championId": 64,
+              "count": 1,
+              "name": "Lee Sin",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/LeeSin.png"
             },
             {
               "championId": 11,
               "count": 1,
               "name": "Master Yi",
               "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/MasterYi.png"
+            },
+            {
+              "championId": 9,
+              "count": 1,
+              "name": "Fiddlesticks",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Fiddlesticks.png"
             },
             {
               "championId": 113,
@@ -60,7 +90,7 @@
         }
       },
       "last5": {
-        "computedAt": "2026-01-13T10:24:12.159Z",
+        "computedAt": "2026-01-13T12:19:47.283Z",
         "games": [
           {
             "matchId": "EUW1_7682821483",
@@ -129,7 +159,11 @@
           }
         ]
       },
-      "last5Error": "LAST5_TTL_MS is not defined"
+      "last5Error": "LAST5_TTL_MS is not defined",
+      "soloWL": {
+        "wins": 3,
+        "losses": 5
+      }
     },
     {
       "id": "p2",
@@ -142,37 +176,67 @@
       "puuid": "GXD6AEJBvLiz7nXkcBcudjTlkTBfAYpChkZpHv6XMA_K4KrHU_SbJPURezb39KXXwJ0sTAW6kk6kyA",
       "lastRank": {
         "tier": "BRONZE",
-        "division": "III",
-        "lp": 70,
-        "wins": 7,
+        "division": "II",
+        "lp": 31,
+        "wins": 9,
         "losses": 1,
-        "winrate": 87.5
+        "winrate": 90
       },
       "currentRank": {
         "tier": "BRONZE",
-        "division": "III",
-        "lp": 70,
-        "wins": 7,
+        "division": "II",
+        "lp": 31,
+        "wins": 9,
         "losses": 1,
-        "winrate": 87.5
+        "winrate": 90
       },
       "bans": [],
-      "pendingBan": null,
+      "pendingBan": {
+        "detectedAt": "2026-01-13T12:19:47.283Z",
+        "from": {
+          "tier": "BRONZE",
+          "division": "III",
+          "lp": 70,
+          "wins": 7,
+          "losses": 1,
+          "winrate": 87.5
+        },
+        "to": {
+          "tier": "BRONZE",
+          "division": "II",
+          "lp": 31,
+          "wins": 9,
+          "losses": 1,
+          "winrate": 90
+        }
+      },
       "lastError": "newRank is not defined",
-      "lastUpdatedAt": "2026-01-13T10:25:22.496Z",
+      "lastUpdatedAt": "2026-01-13T12:28:33.129Z",
       "champGamesByYear": {
         "2026": {
-          "computedAt": "2026-01-12T14:14:42.851Z",
+          "computedAt": "2026-01-13T12:20:14.157Z",
           "year": 2026,
           "queueId": null,
-          "matchCount": 3,
-          "totalGames": 3,
+          "matchCount": 10,
+          "totalGames": 10,
           "byChampion": [
             {
               "championId": 18,
-              "count": 2,
+              "count": 7,
               "name": "Tristana",
               "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Tristana.png"
+            },
+            {
+              "championId": 876,
+              "count": 1,
+              "name": "Lillia",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Lillia.png"
+            },
+            {
+              "championId": 141,
+              "count": 1,
+              "name": "Kayn",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Kayn.png"
             },
             {
               "championId": 21,
@@ -184,8 +248,34 @@
         }
       },
       "last5": {
-        "computedAt": "2026-01-13T10:24:12.159Z",
+        "computedAt": "2026-01-13T12:19:47.283Z",
         "games": [
+          {
+            "matchId": "EUW1_7683317095",
+            "time": "2026-01-13T12:06:02.470Z",
+            "win": true,
+            "championId": 141,
+            "championName": "Kayn",
+            "championIcon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Kayn.png",
+            "k": 7,
+            "d": 3,
+            "a": 4,
+            "durationSec": 1861,
+            "queueId": 420
+          },
+          {
+            "matchId": "EUW1_7683282948",
+            "time": "2026-01-13T11:15:04.498Z",
+            "win": true,
+            "championId": 876,
+            "championName": "Lillia",
+            "championIcon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Lillia.png",
+            "k": 14,
+            "d": 1,
+            "a": 9,
+            "durationSec": 1667,
+            "queueId": 420
+          },
           {
             "matchId": "EUW1_7682993212",
             "time": "2026-01-12T23:49:04.137Z",
@@ -224,36 +314,14 @@
             "a": 12,
             "durationSec": 2405,
             "queueId": 420
-          },
-          {
-            "matchId": "EUW1_7682150307",
-            "time": "2026-01-12T16:05:01.418Z",
-            "win": true,
-            "championId": 18,
-            "championName": "Tristana",
-            "championIcon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Tristana.png",
-            "k": 16,
-            "d": 2,
-            "a": 7,
-            "durationSec": 1491,
-            "queueId": 420
-          },
-          {
-            "matchId": "EUW1_7682106129",
-            "time": "2026-01-12T15:35:11.805Z",
-            "win": true,
-            "championId": 18,
-            "championName": "Tristana",
-            "championIcon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Tristana.png",
-            "k": 19,
-            "d": 3,
-            "a": 20,
-            "durationSec": 1965,
-            "queueId": 420
           }
         ]
       },
-      "last5Error": "LAST5_TTL_MS is not defined"
+      "last5Error": "LAST5_TTL_MS is not defined",
+      "soloWL": {
+        "wins": 9,
+        "losses": 1
+      }
     },
     {
       "id": "p3",
@@ -289,21 +357,15 @@
       ],
       "pendingBan": null,
       "lastError": "newRank is not defined",
-      "lastUpdatedAt": "2026-01-13T10:25:22.496Z",
+      "lastUpdatedAt": "2026-01-13T12:28:33.129Z",
       "champGamesByYear": {
         "2026": {
-          "computedAt": "2026-01-13T10:10:36.857Z",
+          "computedAt": "2026-01-13T12:20:15.277Z",
           "year": 2026,
           "queueId": null,
           "matchCount": 9,
           "totalGames": 9,
           "byChampion": [
-            {
-              "championId": 895,
-              "count": 1,
-              "name": "Nilah",
-              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Nilah.png"
-            },
             {
               "championId": 51,
               "count": 1,
@@ -311,10 +373,22 @@
               "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Caitlyn.png"
             },
             {
+              "championId": 895,
+              "count": 1,
+              "name": "Nilah",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Nilah.png"
+            },
+            {
               "championId": 81,
               "count": 1,
               "name": "Ezreal",
               "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Ezreal.png"
+            },
+            {
+              "championId": 360,
+              "count": 1,
+              "name": "Samira",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Samira.png"
             },
             {
               "championId": 202,
@@ -329,16 +403,10 @@
               "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Xayah.png"
             },
             {
-              "championId": 360,
+              "championId": 110,
               "count": 1,
-              "name": "Samira",
-              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Samira.png"
-            },
-            {
-              "championId": 21,
-              "count": 1,
-              "name": "Miss Fortune",
-              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/MissFortune.png"
+              "name": "Varus",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Varus.png"
             },
             {
               "championId": 222,
@@ -347,16 +415,16 @@
               "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Jinx.png"
             },
             {
-              "championId": 110,
+              "championId": 21,
               "count": 1,
-              "name": "Varus",
-              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Varus.png"
+              "name": "Miss Fortune",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/MissFortune.png"
             }
           ]
         }
       },
       "last5": {
-        "computedAt": "2026-01-13T10:24:12.159Z",
+        "computedAt": "2026-01-13T12:19:47.283Z",
         "games": [
           {
             "matchId": "EUW1_7682458812",
@@ -425,7 +493,11 @@
           }
         ]
       },
-      "last5Error": "LAST5_TTL_MS is not defined"
+      "last5Error": "LAST5_TTL_MS is not defined",
+      "soloWL": {
+        "wins": 8,
+        "losses": 0
+      }
     },
     {
       "id": "p4",
@@ -439,18 +511,18 @@
       "lastRank": {
         "tier": "BRONZE",
         "division": "III",
-        "lp": 71,
+        "lp": 61,
         "wins": 7,
-        "losses": 2,
-        "winrate": 77.8
+        "losses": 3,
+        "winrate": 70
       },
       "currentRank": {
         "tier": "BRONZE",
         "division": "III",
-        "lp": 71,
+        "lp": 61,
         "wins": 7,
-        "losses": 2,
-        "winrate": 77.8
+        "losses": 3,
+        "winrate": 70
       },
       "bans": [
         {
@@ -461,14 +533,14 @@
       ],
       "pendingBan": null,
       "lastError": "newRank is not defined",
-      "lastUpdatedAt": "2026-01-13T10:25:22.496Z",
+      "lastUpdatedAt": "2026-01-13T12:28:33.129Z",
       "champGamesByYear": {
         "2026": {
-          "computedAt": "2026-01-12T22:07:54.316Z",
+          "computedAt": "2026-01-13T12:28:03.857Z",
           "year": 2026,
           "queueId": null,
-          "matchCount": 9,
-          "totalGames": 9,
+          "matchCount": 11,
+          "totalGames": 11,
           "byChampion": [
             {
               "championId": 25,
@@ -478,9 +550,15 @@
             },
             {
               "championId": 60,
-              "count": 3,
+              "count": 4,
               "name": "Elise",
               "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Elise.png"
+            },
+            {
+              "championId": 143,
+              "count": 1,
+              "name": "Zyra",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Zyra.png"
             },
             {
               "championId": 203,
@@ -492,8 +570,21 @@
         }
       },
       "last5": {
-        "computedAt": "2026-01-13T10:24:12.159Z",
+        "computedAt": "2026-01-13T12:19:47.283Z",
         "games": [
+          {
+            "matchId": "EUW1_7683284719",
+            "time": "2026-01-13T11:11:52.429Z",
+            "win": false,
+            "championId": 143,
+            "championName": "Zyra",
+            "championIcon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Zyra.png",
+            "k": 5,
+            "d": 4,
+            "a": 9,
+            "durationSec": 1602,
+            "queueId": 420
+          },
           {
             "matchId": "EUW1_7683239179",
             "time": "2026-01-13T10:14:42.979Z",
@@ -545,23 +636,14 @@
             "a": 24,
             "durationSec": 2067,
             "queueId": 420
-          },
-          {
-            "matchId": "EUW1_7682086648",
-            "time": "2026-01-12T15:19:15.455Z",
-            "win": true,
-            "championId": 25,
-            "championName": "Morgana",
-            "championIcon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Morgana.png",
-            "k": 16,
-            "d": 1,
-            "a": 17,
-            "durationSec": 1878,
-            "queueId": 420
           }
         ]
       },
-      "last5Error": "LAST5_TTL_MS is not defined"
+      "last5Error": "LAST5_TTL_MS is not defined",
+      "soloWL": {
+        "wins": 7,
+        "losses": 3
+      }
     },
     {
       "id": "p5",
@@ -591,20 +673,32 @@
       "bans": [],
       "pendingBan": null,
       "lastError": "newRank is not defined",
-      "lastUpdatedAt": "2026-01-13T10:25:22.496Z",
+      "lastUpdatedAt": "2026-01-13T12:28:33.129Z",
       "champGamesByYear": {
         "2026": {
-          "computedAt": "2026-01-12T14:12:42.745Z",
+          "computedAt": "2026-01-13T12:28:20.510Z",
           "year": 2026,
           "queueId": null,
-          "matchCount": 5,
-          "totalGames": 5,
+          "matchCount": 11,
+          "totalGames": 11,
           "byChampion": [
+            {
+              "championId": 45,
+              "count": 4,
+              "name": "Veigar",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Veigar.png"
+            },
             {
               "championId": 105,
               "count": 3,
               "name": "Fizz",
               "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Fizz.png"
+            },
+            {
+              "championId": 38,
+              "count": 2,
+              "name": "Kassadin",
+              "icon": "https://ddragon.leagueoflegends.com/cdn/16.1.1/img/champion/Kassadin.png"
             },
             {
               "championId": 33,
@@ -622,7 +716,7 @@
         }
       },
       "last5": {
-        "computedAt": "2026-01-13T10:24:12.159Z",
+        "computedAt": "2026-01-13T12:19:47.283Z",
         "games": [
           {
             "matchId": "EUW1_7682905204",
@@ -691,7 +785,11 @@
           }
         ]
       },
-      "last5Error": "LAST5_TTL_MS is not defined"
+      "last5Error": "LAST5_TTL_MS is not defined",
+      "soloWL": {
+        "wins": 6,
+        "losses": 5
+      }
     }
   ],
   "banHistory": [
