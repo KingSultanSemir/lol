@@ -293,7 +293,7 @@ async function fetchSoloQRank(player) {
     `${encodeURIComponent(player.puuid)}`;
   //console.log(url);
   const entries = await riotFetch(url);
-  //console.log(entries);
+  console.log("fetchSoloQPlayer():", entries);
   const solo = Array.isArray(entries)
     ? entries.find((e) => e.queueType === "RANKED_SOLO_5x5")
     : null;
@@ -460,6 +460,140 @@ async function computeChampionGamesForYear(
   return stats;
 }
 
+async function updateChampionGamesForYearIncremental(
+  state,
+  player,
+  year = 2026,
+  queueId = null
+) {
+  await ensurePuuidAndSummonerId(player);
+
+  // Stats-Container anlegen
+  if (!player.champGamesByYear) player.champGamesByYear = {};
+  let stats = player.champGamesByYear[String(year)];
+
+  // Wenn noch keine Stats existieren: initial einmalig FULL (deine bestehende Funktion)
+  if (!stats || !stats.countsByChampionId) {
+    const full = await computeChampionGamesForYear(
+      state,
+      player,
+      year,
+      queueId
+    );
+    // Speichere zusätzlich eine counts-map, damit wir inkrementell updaten können
+    const countsByChampionId = {};
+    for (const row of full.byChampion || []) {
+      countsByChampionId[String(row.championId)] = row.count;
+    }
+
+    // latestMatchId setzen (neuester MatchId aus Year-IDs)
+    // (computeChampionGamesForYear hat matchIds intern; falls du die nicht rausgibst,
+    //  setzen wir latestMatchId beim nächsten incremental-run automatisch)
+    stats = {
+      ...full,
+      countsByChampionId,
+      latestMatchId: null,
+    };
+
+    player.champGamesByYear[String(year)] = stats;
+    await saveState(state);
+    return stats;
+  }
+
+  // 1) Nur die neuesten IDs im Jahr holen (keine Pagination, keine Vollsuche)
+  const region = regionalForPlatform(player.platform);
+  const { start, end } = yearRangeEpochSeconds(year);
+
+  const qs = new URLSearchParams({
+    startTime: String(start),
+    endTime: String(end),
+    start: "0",
+    count: "100",
+  });
+  if (queueId != null) qs.set("queue", String(queueId));
+
+  const idsUrl =
+    `https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/` +
+    `${encodeURIComponent(player.puuid)}/ids?` +
+    qs.toString();
+
+  const ids = await riotFetch(idsUrl);
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return stats; // nix zu tun
+  }
+
+  // 2) Neue MatchIds seit letztem Stand ermitteln
+  const latestKnown = stats.latestMatchId;
+  const newIds = [];
+
+  for (const id of ids) {
+    if (latestKnown && id === latestKnown) break;
+    newIds.push(id);
+  }
+
+  // latestMatchId updaten (neuestes Match im Jahr)
+  stats.latestMatchId = ids[0];
+
+  if (newIds.length === 0) {
+    // keine neuen Matches im Jahr
+    player.champGamesByYear[String(year)] = stats;
+    await saveState(state);
+    return stats;
+  }
+
+  // 3) Nur für die neuen Matches Details holen und counts aktualisieren
+  let added = 0;
+
+  for (const matchId of newIds) {
+    const m = await fetchMatchDetail(region, matchId);
+
+    // Remake skip
+    const dur = m?.info?.gameDuration;
+    if (Number.isFinite(dur) && dur > 0 && dur < REMAKE_MAX_DURATION_SEC)
+      continue;
+
+    const parts = m?.info?.participants || [];
+    const me = parts.find((x) => x?.puuid === player.puuid);
+    const champId = me?.championId;
+
+    if (!Number.isFinite(champId)) continue;
+
+    const k = String(champId);
+    stats.countsByChampionId[k] = (stats.countsByChampionId[k] || 0) + 1;
+    added++;
+  }
+
+  // 4) byChampion neu bauen (nur Mapping + Sortierung)
+  const dd = await getChampionsFromDdragon({ lang: "de_DE" });
+  const byKey = new Map(dd.champions.map((c) => [String(c.key), c]));
+
+  const list = Object.entries(stats.countsByChampionId).map(
+    ([champIdStr, count]) => {
+      const champ = byKey.get(champIdStr);
+      return {
+        championId: Number(champIdStr),
+        count,
+        name: champ?.name || `Champion ${champIdStr}`,
+        icon: champ?.icon || null,
+      };
+    }
+  );
+
+  list.sort((a, b) => b.count - a.count);
+
+  stats.byChampion = list;
+  stats.totalGames = (stats.totalGames || 0) + added;
+  stats.computedAt = new Date().toISOString();
+  stats.lastIncrement = {
+    addedMatches: newIds.length,
+    addedGamesCounted: added,
+  };
+
+  player.champGamesByYear[String(year)] = stats;
+  await saveState(state);
+  return stats;
+}
+
 async function refreshAll() {
   const state = await loadState();
   const nowIso = new Date().toISOString();
@@ -499,20 +633,17 @@ async function refreshAll() {
             !isFresh(cached.computedAt, LAST5_TTL_MS)
           ) {
             const games = await fetchLastNGamesSummary(p, 5, 420);
+            console.log("GAMES:", games);
             p.last5 = { computedAt: nowIso, games };
+            try {
+              await updateChampionGamesForYearIncremental(state, p, 2026, 420); // null = alle queues
+            } catch (e) {
+              p.champGamesError2026 = String(e?.message || e);
+            }
           }
         } catch (e) {
           p.last5 = { computedAt: nowIso, games: [] };
           p.last5Error = String(e?.message || e);
-        }
-        try {
-          const stats = await computeChampionGamesForYear(state, p, 2026, null); // null = alle Queues
-          // Trigger merken, damit klar ist, wann zuletzt berechnet wurde
-          stats.triggerSoloTotal = newTotal;
-          if (!p.champGamesByYear) p.champGamesByYear = {};
-          p.champGamesByYear["2026"] = stats;
-        } catch (e) {
-          p.champGamesError2026 = String(e?.message || e);
         }
       }
       p.lastUpdatedAt = nowIso;
