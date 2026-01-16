@@ -33,25 +33,7 @@
           "note": "Von Bronze 4 nach 3"
         }
       ],
-      "pendingBan": {
-        "detectedAt": "2026-01-16T15:35:37.168Z",
-        "from": {
-          "tier": "BRONZE",
-          "division": "IV",
-          "lp": 20,
-          "wins": 3,
-          "losses": 5,
-          "winrate": 37.5
-        },
-        "to": {
-          "tier": "BRONZE",
-          "division": "III",
-          "lp": 19,
-          "wins": 7,
-          "losses": 6,
-          "winrate": 53.8
-        }
-      },
+      "pendingBan": null,
       "lastUpdatedAt": "2026-01-16T17:16:24.978Z",
       "champGamesByYear": {
         "2026": {
@@ -267,25 +249,7 @@
           "note": "Von Bronze 3 nach 2"
         }
       ],
-      "pendingBan": {
-        "detectedAt": "2026-01-13T12:19:47.283Z",
-        "from": {
-          "tier": "BRONZE",
-          "division": "III",
-          "lp": 70,
-          "wins": 7,
-          "losses": 1,
-          "winrate": 87.5
-        },
-        "to": {
-          "tier": "BRONZE",
-          "division": "II",
-          "lp": 31,
-          "wins": 9,
-          "losses": 1,
-          "winrate": 90
-        }
-      },
+      "pendingBan": null,
       "lastUpdatedAt": "2026-01-16T17:16:24.978Z",
       "champGamesByYear": {
         "2026": {
@@ -524,25 +488,7 @@
           "note": ""
         }
       ],
-      "pendingBan": {
-        "detectedAt": "2026-01-16T15:35:37.168Z",
-        "from": {
-          "tier": "BRONZE",
-          "division": "II",
-          "lp": 4,
-          "wins": 8,
-          "losses": 0,
-          "winrate": 100
-        },
-        "to": {
-          "tier": "BRONZE",
-          "division": "I",
-          "lp": 49,
-          "wins": 14,
-          "losses": 4,
-          "winrate": 77.8
-        }
-      },
+      "pendingBan": null,
       "lastUpdatedAt": "2026-01-16T17:16:24.978Z",
       "champGamesByYear": {
         "2026": {
@@ -788,25 +734,7 @@
           "note": "Von Bronze 2 nach 1"
         }
       ],
-      "pendingBan": {
-        "detectedAt": "2026-01-16T15:35:37.168Z",
-        "from": {
-          "tier": "BRONZE",
-          "division": "III",
-          "lp": 61,
-          "wins": 7,
-          "losses": 3,
-          "winrate": 70
-        },
-        "to": {
-          "tier": "BRONZE",
-          "division": "II",
-          "lp": 73,
-          "wins": 13,
-          "losses": 9,
-          "winrate": 59.1
-        }
-      },
+      "pendingBan": null,
       "lastUpdatedAt": "2026-01-16T17:16:24.978Z",
       "champGamesByYear": {
         "2026": {
