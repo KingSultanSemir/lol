@@ -14,8 +14,10 @@ if (!RIOT_API_KEY) {
   console.error("Fehlt: RIOT_API_KEY (Environment Variable).");
   process.exit(1);
 }
-const LAST5_TTL_MS = 2 * 60 * 1000;
 const REMAKE_MAX_DURATION_SEC = 300; // 5 Minuten
+
+let MATCH_DETAIL_BUDGET = 0;
+const MATCH_DETAIL_BUDGET_PER_REFRESH = 20; // start konservativ
 
 const DATA_DIR = process.env.DATA_DIR; // z.B. /data (Railway Volume)
 const DATA_PATH = DATA_DIR
@@ -57,11 +59,28 @@ async function saveState(state) {
   await fs.writeFile(DATA_PATH, JSON.stringify(state, null, 2), "utf-8");
 }
 
-async function riotFetch(url) {
-  console.log("api call");
-  const res = await fetch(url, {
-    headers: { "X-Riot-Token": RIOT_API_KEY },
-  });
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+async function riotFetch(url, { retries = 5 } = {}) {
+  const res = await fetch(url, { headers: { "X-Riot-Token": RIOT_API_KEY } });
+
+  if (res.status === 429) {
+    console.log("RateLimit Suceeded");
+    const retryAfterSec = Number(res.headers.get("retry-after") || 0);
+    const waitMs =
+      retryAfterSec > 0 ? retryAfterSec * 1000 : 500 + Math.random() * 500; // fallback
+
+    if (retries <= 0) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Riot API 429 Rate limit exceeded: ${text}`);
+    }
+
+    await sleep(waitMs);
+    return riotFetch(url, { retries: retries - 1 });
+  }
+
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`Riot API ${res.status} ${res.statusText}: ${text}`);
@@ -172,11 +191,21 @@ async function fetchAllMatchIdsForYear({
   return all;
 }
 
+const matchDetailCache = new Map();
+
 async function fetchMatchDetail(region, matchId) {
-  const url =
-    `https://${region}.api.riotgames.com/lol/match/v5/matches/` +
-    `${encodeURIComponent(matchId)}`;
-  return riotFetch(url);
+  const key = `${region}:${matchId}`;
+  if (matchDetailCache.has(key)) return matchDetailCache.get(key);
+
+  if (MATCH_DETAIL_BUDGET <= 0) throw new Error("MATCH_DETAIL_BUDGET_EXCEEDED");
+  MATCH_DETAIL_BUDGET--;
+
+  const url = `https://${region}.api.riotgames.com/lol/match/v5/matches/${encodeURIComponent(
+    matchId
+  )}`;
+  const data = await riotFetch(url);
+  matchDetailCache.set(key, data);
+  return data;
 }
 
 async function countGamesByChampionFromMatches({ puuid, platform, matchIds }) {
@@ -228,6 +257,9 @@ function mapCountsToChampionList(ddChampions, countsMap) {
 }
 
 function rankValue(oldRank, newRank) {
+  if (!oldRank || oldRank.unranked) return false;
+  if (!newRank || newRank.unranked) return false;
+
   const tierOrder = {
     IRON: 1,
     BRONZE: 2,
@@ -240,7 +272,6 @@ function rankValue(oldRank, newRank) {
     GRANDMASTER: 9,
     CHALLENGER: 10,
   };
-
   const divOrder = { IV: 1, III: 2, II: 3, I: 4 };
 
   const oldTier = tierOrder[String(oldRank.tier || "").toUpperCase()] ?? 0;
@@ -248,7 +279,6 @@ function rankValue(oldRank, newRank) {
 
   if (newTier !== oldTier) return newTier > oldTier;
 
-  // Apex-Tiers (Master+) haben oft keine Division -> dann nur LP vergleichen
   const apex = newTier >= tierOrder.MASTER;
 
   const oldDiv = apex
@@ -260,8 +290,6 @@ function rankValue(oldRank, newRank) {
 
   if (newDiv !== oldDiv) return newDiv > oldDiv;
 
-  // Gleicher Tier+Div: LP zählt NICHT als Uprank bei euch -> daher false
-  // Wenn du LP als Promotion zählen willst, ändere auf: return newLp > oldLp;
   return false;
 }
 
@@ -287,7 +315,8 @@ async function ensurePuuidAndSummonerId(player) {
 }
 
 async function fetchSoloQRank(player) {
-  const platform = "euw1";
+  const platform = String(player.platform || "euw1").toLowerCase();
+
   const url =
     `https://${platform}.api.riotgames.com/lol/league/v4/entries/by-puuid/` +
     `${encodeURIComponent(player.puuid)}`;
@@ -460,47 +489,34 @@ async function computeChampionGamesForYear(
   return stats;
 }
 
-async function updateChampionGamesForYearIncremental(
+function ensureCountsMap(stats) {
+  if (stats.countsByChampionId) return;
+  const map = {};
+  for (const row of stats.byChampion || []) {
+    map[String(row.championId)] = row.count;
+  }
+  stats.countsByChampionId = map;
+}
+
+async function updateChampionOverviewIncremental(
   state,
   player,
   year = 2026,
-  queueId = null
+  queueId = 420
 ) {
   await ensurePuuidAndSummonerId(player);
-
-  // Stats-Container anlegen
   if (!player.champGamesByYear) player.champGamesByYear = {};
-  let stats = player.champGamesByYear[String(year)];
+  const key = String(year);
 
-  // Wenn noch keine Stats existieren: initial einmalig FULL (deine bestehende Funktion)
-  if (!stats || !stats.countsByChampionId) {
-    const full = await computeChampionGamesForYear(
-      state,
-      player,
-      year,
-      queueId
-    );
-    // Speichere zusätzlich eine counts-map, damit wir inkrementell updaten können
-    const countsByChampionId = {};
-    for (const row of full.byChampion || []) {
-      countsByChampionId[String(row.championId)] = row.count;
-    }
-
-    // latestMatchId setzen (neuester MatchId aus Year-IDs)
-    // (computeChampionGamesForYear hat matchIds intern; falls du die nicht rausgibst,
-    //  setzen wir latestMatchId beim nächsten incremental-run automatisch)
-    stats = {
-      ...full,
-      countsByChampionId,
-      latestMatchId: null,
-    };
-
-    player.champGamesByYear[String(year)] = stats;
-    await saveState(state);
-    return stats;
+  let stats = player.champGamesByYear[key];
+  if (!stats) {
+    stats = { year, queueId, totalGames: 0, byChampion: [] };
+    player.champGamesByYear[key] = stats;
   }
 
-  // 1) Nur die neuesten IDs im Jahr holen (keine Pagination, keine Vollsuche)
+  stats.queueId = queueId;
+  ensureCountsMap(stats);
+
   const region = regionalForPlatform(player.platform);
   const { start, end } = yearRangeEpochSeconds(year);
 
@@ -518,30 +534,36 @@ async function updateChampionGamesForYearIncremental(
     qs.toString();
 
   const ids = await riotFetch(idsUrl);
-  if (!Array.isArray(ids) || ids.length === 0) {
-    return stats; // nix zu tun
+  if (!Array.isArray(ids) || ids.length === 0) return;
+
+  // Wenn wir noch keinen Marker haben: nur Marker setzen (damit wir nichts doppelt zählen)
+  if (!stats.latestMatchId) {
+    stats.latestMatchId = ids[0];
+    stats.computedAt = new Date().toISOString();
+    await saveState(state);
+    return;
   }
 
-  // 2) Neue MatchIds seit letztem Stand ermitteln
-  const latestKnown = stats.latestMatchId;
+  // Neue IDs bis zum Marker
   const newIds = [];
-
   for (const id of ids) {
-    if (latestKnown && id === latestKnown) break;
+    if (id === stats.latestMatchId) break;
     newIds.push(id);
   }
 
-  // latestMatchId updaten (neuestes Match im Jahr)
+  // Marker auf neuestes setzen
   stats.latestMatchId = ids[0];
 
   if (newIds.length === 0) {
-    // keine neuen Matches im Jahr
-    player.champGamesByYear[String(year)] = stats;
+    stats.computedAt = new Date().toISOString();
     await saveState(state);
-    return stats;
+    return;
   }
 
-  // 3) Nur für die neuen Matches Details holen und counts aktualisieren
+  // DDragon für Mapping
+  const dd = await getChampionsFromDdragon({ lang: "de_DE" });
+  const byKey = new Map(dd.champions.map((c) => [String(c.key), c]));
+
   let added = 0;
 
   for (const matchId of newIds) {
@@ -552,21 +574,19 @@ async function updateChampionGamesForYearIncremental(
     if (Number.isFinite(dur) && dur > 0 && dur < REMAKE_MAX_DURATION_SEC)
       continue;
 
-    const parts = m?.info?.participants || [];
-    const me = parts.find((x) => x?.puuid === player.puuid);
+    const me = (m?.info?.participants || []).find(
+      (x) => x?.puuid === player.puuid
+    );
     const champId = me?.championId;
-
     if (!Number.isFinite(champId)) continue;
 
     const k = String(champId);
     stats.countsByChampionId[k] = (stats.countsByChampionId[k] || 0) + 1;
+    stats.totalGames = (stats.totalGames || 0) + 1;
     added++;
   }
 
-  // 4) byChampion neu bauen (nur Mapping + Sortierung)
-  const dd = await getChampionsFromDdragon({ lang: "de_DE" });
-  const byKey = new Map(dd.champions.map((c) => [String(c.key), c]));
-
+  // byChampion neu bauen (aus counts)
   const list = Object.entries(stats.countsByChampionId).map(
     ([champIdStr, count]) => {
       const champ = byKey.get(champIdStr);
@@ -578,23 +598,20 @@ async function updateChampionGamesForYearIncremental(
       };
     }
   );
-
   list.sort((a, b) => b.count - a.count);
 
   stats.byChampion = list;
-  stats.totalGames = (stats.totalGames || 0) + added;
+  stats.matchCount = (stats.matchCount || 0) + newIds.length; // optional als "processed match ids"
   stats.computedAt = new Date().toISOString();
-  stats.lastIncrement = {
-    addedMatches: newIds.length,
-    addedGamesCounted: added,
-  };
+  stats.lastIncrement = { newMatchesSeen: newIds.length, gamesCounted: added };
 
-  player.champGamesByYear[String(year)] = stats;
+  player.champGamesByYear[key] = stats;
   await saveState(state);
-  return stats;
 }
 
 async function refreshAll() {
+  MATCH_DETAIL_BUDGET = MATCH_DETAIL_BUDGET_PER_REFRESH;
+
   const state = await loadState();
   const nowIso = new Date().toISOString();
   state.globalLastUpdatedAt = nowIso;
@@ -604,7 +621,7 @@ async function refreshAll() {
       await ensurePuuidAndSummonerId(p);
 
       const newRank = await fetchSoloQRank(p);
-      const prevRank = p.currentRank ?? p.lastRank ?? null;
+      const prevRank = p.currentRank || p.lastRank || { unranked: true };
 
       // Vorherige SoloQ W/L aus dem gespeicherten State
       const prevWL = p.soloWL || { wins: null, losses: null };
@@ -626,25 +643,12 @@ async function refreshAll() {
       p.currentRank = newRank;
 
       if (newTotal !== prevTotal) {
-        try {
-          const cached = p.last5;
-          if (
-            !cached?.computedAt ||
-            !isFresh(cached.computedAt, LAST5_TTL_MS)
-          ) {
-            const games = await fetchLastNGamesSummary(p, 5, 420);
-            console.log("GAMES:", games);
-            p.last5 = { computedAt: nowIso, games };
-            try {
-              await updateChampionGamesForYearIncremental(state, p, 2026, 420); // null = alle queues
-            } catch (e) {
-              p.champGamesError2026 = String(e?.message || e);
-            }
-          }
-        } catch (e) {
-          p.last5 = { computedAt: nowIso, games: [] };
-          p.last5Error = String(e?.message || e);
-        }
+        await updateChampionOverviewIncremental(state, p, 2026, 420);
+        const cached = p.last5;
+
+        const games = await fetchLastNGamesSummary(p, 5, 420);
+        console.log("GAMES:", games);
+        p.last5 = { computedAt: nowIso, games };
       }
       p.lastUpdatedAt = nowIso;
 
@@ -659,8 +663,12 @@ async function refreshAll() {
         }
       }
     } catch (err) {
-      p.lastUpdatedAt = nowIso;
-      p.lastError = String(err?.message || err);
+      const msg = String(e?.message || e);
+      if (msg.includes("MATCH_DETAIL_BUDGET_EXCEEDED")) {
+        p.needsCatchup = true;
+      } else {
+        p.lastError = msg;
+      }
     }
   }
 
@@ -677,6 +685,31 @@ app.get("/api/state", async (req, res) => {
   res.json(state);
 });
 
+app.get("/api/player/:playerId/overview", async (req, res) => {
+  try {
+    const playerId = String(req.params.playerId);
+    const state = await loadState();
+    const p = state.players.find((x) => x.id === playerId);
+    if (!p)
+      return res
+        .status(404)
+        .json({ ok: false, error: "Spieler nicht gefunden." });
+
+    // Minimal: nur aus data.json liefern (ohne Riot Calls)
+    return res.json({
+      ok: true,
+      playerId: p.id,
+      displayName: p.displayName,
+      bans: Array.isArray(p.bans) ? p.bans : [],
+      games2026: p.champGamesByYear?.["2026"]?.byChampion || [],
+      totalGames2026: p.champGamesByYear?.["2026"]?.totalGames || 0,
+      last5: p.last5?.games || [],
+    });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: String(e?.message || e) });
+  }
+});
+
 app.get("/api/champions", async (req, res) => {
   try {
     const lang = req.query.lang ? String(req.query.lang) : "de_DE";
@@ -686,10 +719,6 @@ app.get("/api/champions", async (req, res) => {
     res.status(500).json({ ok: false, error: String(e?.message || e) });
   }
 });
-
-// kleines in-memory cache (10 min) für overview
-const OVERVIEW_TTL_MS = 10 * 60 * 1000;
-const overviewCache = new Map(); // key: playerId -> { ts, data }
 
 async function fetchTopChampionMastery(player, topN = 5) {
   // falls du summonerId doch nicht speicherst: hier sicherstellen (oder an deine Logik anpassen)
@@ -707,57 +736,6 @@ function champByNumericId(champions, championIdNum) {
   // Data Dragon: champ.key ist numeric string ("266")
   return champions.find((c) => c.key === idStr) || null;
 }
-
-app.get("/api/player/:playerId/overview", async (req, res) => {
-  try {
-    const playerId = String(req.params.playerId);
-    const state = await loadState();
-    const p = state.players.find((x) => x.id === playerId);
-    if (!p)
-      return res
-        .status(404)
-        .json({ ok: false, error: "Spieler nicht gefunden." });
-
-    // cache
-    const cached = overviewCache.get(playerId);
-    if (cached && Date.now() - cached.ts < OVERVIEW_TTL_MS) {
-      return res.json({ ok: true, ...cached.data });
-    }
-
-    // Champions (für Icons/Namen)
-    const dd = await getChampionsFromDdragon({ lang: "de_DE" });
-
-    // Top mastery (most played)
-    const mastery = await fetchTopChampionMastery(p, 5);
-    const mostPlayed = (Array.isArray(mastery) ? mastery : []).map((m) => {
-      const champ = champByNumericId(dd.champions, m.championId);
-      return {
-        championId: m.championId,
-        name: champ?.name || `Champion ${m.championId}`,
-        icon: champ?.icon || null,
-        points: m.championPoints,
-      };
-    });
-
-    // NEU: Games pro Champ aus Match-Historie 2026 (alle Queues oder setze queueId=420)
-    const games2026 = await computeChampionGamesForYear(state, p, 2026, null);
-
-    const data = {
-      playerId: p.id,
-      displayName: p.displayName,
-      mostPlayed,
-      bans: Array.isArray(p.bans) ? p.bans : [],
-      games2026: games2026.byChampion, // Liste sortiert
-      totalGames2026: games2026.totalGames,
-    };
-
-    overviewCache.set(playerId, { ts: Date.now(), data });
-    await saveState(state); // falls ensurePuuidAndSummonerId was ergänzt hat
-    res.json({ ok: true, ...data });
-  } catch (e) {
-    res.status(500).json({ ok: false, error: String(e?.message || e) });
-  }
-});
 
 app.get("/api/player/:playerId/champ-games", async (req, res) => {
   try {

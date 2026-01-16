@@ -125,17 +125,23 @@ async function apiGetPlayerOverview(playerId) {
   const res = await fetch(
     `/api/player/${encodeURIComponent(playerId)}/overview`
   );
-  const out = await res.json();
-  if (!out.ok) throw new Error(out.error || "Overview fehlgeschlagen");
+  const out = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(out.error || `HTTP ${res.status}`);
+  // akzeptiere sowohl {ok:true,...} als auch {...} ohne ok
+  if (out && out.ok === false)
+    throw new Error(out.error || "Overview fehlgeschlagen");
   return out;
 }
+
 async function apiGetChampGames(playerId, year = 2026) {
   const res = await fetch(
     `/api/player/${encodeURIComponent(playerId)}/champ-games?year=${year}`
   );
-  const out = await res.json();
-  if (!out.ok) throw new Error(out.error || "champ-games fehlgeschlagen");
-  return out; // { byChampion: [...], totalGames, matchCount, ...}
+  const out = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(out.error || `HTTP ${res.status}`);
+  if (out && out.ok === false)
+    throw new Error(out.error || "champ-games fehlgeschlagen");
+  return out;
 }
 
 function openOverviewModal() {
@@ -156,9 +162,7 @@ function renderOverviewTilesMostPlayedFromGames(list, bans) {
 
   const bannedSet = new Set((bans || []).map((b) => norm(b.champion)));
 
-  const top = list.slice(0, 10); // optional Top 10
-
-  for (const it of top) {
+  for (const it of list) {
     const isBanned =
       bannedSet.has(norm(it.name)) || (it.id && bannedSet.has(norm(it.id))); // falls du später mal IDs speicherst
 
@@ -421,24 +425,34 @@ function renderPlayers() {
     div
       .querySelector(`[data-overview="${p.id}"]`)
       .addEventListener("click", async () => {
+        // Modal sofort öffnen + Loading anzeigen
+        ovTitle.textContent = `Übersicht: ${p.displayName}`;
+        ovMostPlayed.innerHTML = `<div class="muted">Lade…</div>`;
+        ovBans.innerHTML = `<div class="muted">Lade…</div>`;
+        openOverviewModal();
+
         try {
           await loadChampionsOnce(); // für Ban-Icons
+
           const [ov, games] = await Promise.all([
             apiGetPlayerOverview(p.id),
             apiGetChampGames(p.id, 2026),
           ]);
 
-          ovTitle.textContent = `Übersicht: ${ov.displayName}`;
-
-          // Überschrift anpassen (optional)
-          // z.B. in index.html h4: "Meistgespielt (2026)"
+          // falls Backend displayName liefert
+          ovTitle.textContent = `Übersicht: ${ov.displayName || p.displayName}`;
 
           renderOverviewTilesMostPlayedFromGames(games.byChampion, ov.bans);
           renderOverviewTilesBans(ov.bans);
-
-          openOverviewModal();
         } catch (e) {
           console.warn("Overview fehlgeschlagen:", e);
+          alert(
+            "Übersicht konnte nicht geladen werden: " + String(e?.message || e)
+          );
+          ovMostPlayed.innerHTML = `<div class="muted">Fehler: ${esc(
+            String(e?.message || e)
+          )}</div>`;
+          ovBans.innerHTML = "";
         }
       });
 
